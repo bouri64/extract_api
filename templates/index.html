@@ -70,11 +70,32 @@
            accept="application/pdf"
            required
            hidden>
+    <label>
+        CIK (don't upload file):
+        <input type="text" name="pattern">
+    </label>
+    <label for="year">Year for CIK</label>
+    <input
+        type="number"
+        id="year"
+        name="year"
+        min="1900"
+        max="2100"
+        step="1"
+        placeholder="2024"
+    >
 
     <label>
         Regex / Text:
-        <input type="text" name="pattern" required>
+        <input type="text" name="pattern" value="(In millions, except number of shares, which are reflected in thousands, and per-share amounts)
+">
     </label>
+
+    <label>
+        Prompt (optional):
+        <input type="text" name="base">
+    </label>
+
 
     <label>
         Characters Before:
@@ -83,7 +104,7 @@
 
     <label>
         Characters After:
-        <input type="number" name="after" value="20">
+        <input type="number" name="after" value="1100">
     </label>
 
     <!-- Result Type Selector -->
@@ -95,7 +116,7 @@
                    name="output_type"
                    value="png"
                    checked>
-            Highlighted PNG
+            Highlighted PNG (Only supports pdf)
         </label>
 
         <label>

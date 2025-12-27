@@ -2,11 +2,17 @@ from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 import fitz  # PyMuPDF
 import re
 import tempfile
 import os
 import requests
+from bs4 import BeautifulSoup
+
+def clean_html(text: str) -> str:
+    soup = BeautifulSoup(text, "html.parser")
+    return soup.get_text(separator=" ", strip=True)
 
 url = "https://apifreellm.com/api/chat"
 
@@ -35,19 +41,51 @@ async def search_pdf(
     pattern: str = Form(...),
     before: int = Form(20),
     after: int = Form(20),
-    output_type: str = Form("png")
+    output_type: str = Form("png"),
+    base: str = Form(""),
+    cik: str = Form("")
 ):
+    print("hi")
+    regex = re.compile(pattern)
+    suffix = Path(file.filename).suffix.lower()
+
     # Save uploaded PDF
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         tmp.write(await file.read())
-        pdf_path = tmp.name
+        file_path = tmp.name
+    if suffix == ".txt" or cik != "":
+        if cik != "":
+            text = get_company_10K(cik, 2024)
+            print("Got company")
+        else:
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                text = f.read()
+            print("Text length before cleaning: ", len(text))
+            text = clean_html(text)
+            print("Text length after cleaning: ", len(text))
+        context = "N/A"
+        matches = list(regex.finditer(text))
+        if matches:
+            match = matches[0]
+            start, end = match.span()
 
-    doc = fitz.open(pdf_path)
+            context = text[max(0, start - before): min(len(text), end + after)]
+        first_match_data = {
+            "text": context,
+        }
+        if output_type == "text":
+            return {
+                "first_match": context,
+                "total_hits": len(matches)
+            }
+    
+        return parse_first_match(first_match_data["text"], base)
+
+    doc = fitz.open(file_path)
 
     total_hits = 0
     first_match_data = None
 
-    regex = re.compile(pattern)
     file_name = os.path.splitext(file.filename)[0]
 
     for page_number, page in enumerate(doc):
@@ -84,7 +122,7 @@ async def search_pdf(
             }
 
     doc.close()
-    os.remove(pdf_path)
+    os.remove(file_path)
 
     if not first_match_data:
         return JSONResponse({"message": "No matches found"})
@@ -100,7 +138,7 @@ async def search_pdf(
             "total_hits": total_hits
         }
     
-    return parse_first_match(first_match_data["text"])
+    return parse_first_match(first_match_data["text"], base)
 
 
 def merge_rects(rects):
@@ -111,9 +149,11 @@ def merge_rects(rects):
     return fitz.Rect(x0, y0, x1, y1)
 
 # Custom parse function
-def parse_first_match(match_text: str) -> dict:
-    ## TODO: change prompt based on form year
-    prompt = "## Output format: {year:amount}## ## Instruction: use the following information, apple's earning per share for 2022, 2023 and 2024, not diluted ## \n ## Information : \n" + match_text + "##"
+def parse_first_match(match_text: str, base: str) -> dict:
+    print("Base is: ",base)
+    if base == "" :
+        base = "## Output format: {year:amount}, do not include any explaining text## ## Instruction: use the following information, apple's earning per share for the last 3 years, basic and not diluted ## \n ## Information : \n" 
+    prompt = base + match_text + "##"
 
     data = {
         "message": prompt
@@ -136,3 +176,27 @@ def parse_first_match(match_text: str) -> dict:
         "response": result["response"],
         "length": len(prompt)
     }
+
+def get_company_10K(cik: str, year: int):
+    headers = {
+    "User-Agent": "agent@gmail.com"
+}
+
+    url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+    resp = requests.get(url, headers=headers)
+    data = resp.json()
+    filings = data["filings"]["recent"]
+    for i, form in enumerate(filings["form"]):
+        if form == "10-K" and filings["filingDate"][i].startswith("2024"):
+            accession = filings["accessionNumber"][i].replace("-", "")
+            primary_doc = filings["primaryDocument"][i]
+            print(accession, primary_doc)
+    accession = accession  # from previous step
+    doc = primary_doc
+
+    doc_url = f"https://www.sec.gov/Archives/edgar/data/{cik}/{accession}/{doc}"
+
+    ten_k = requests.get(doc_url, headers=headers).text
+    soup = BeautifulSoup(ten_k, "html.parser")
+    text = soup.get_text(separator=" ", strip=True)
+    return text
