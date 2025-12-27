@@ -6,6 +6,18 @@ import fitz  # PyMuPDF
 import re
 import tempfile
 import os
+import requests
+
+url = "https://apifreellm.com/api/chat"
+
+headers = {
+    "Content-Type": "application/json",
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/121.0.0.0 Safari/537.36"
+    )
+}
 
 
 app = FastAPI()
@@ -82,12 +94,14 @@ async def search_pdf(
         url=f"/static/{file_name}.png",
         status_code=302
     )
+    elif output_type == "text":
+        return {
+            "first_match": first_match_data,
+            "total_hits": total_hits
+        }
+    
+    return parse_first_match(first_match_data["text"])
 
-    return {
-        "first_match": first_match_data,
-        "total_hits": total_hits,
-        "highlighted_image": "/highlighted"
-    }
 
 def merge_rects(rects):
     x0 = min(r.x0 for r in rects)
@@ -95,3 +109,30 @@ def merge_rects(rects):
     x1 = max(r.x1 for r in rects)
     y1 = max(r.y1 for r in rects)
     return fitz.Rect(x0, y0, x1, y1)
+
+# Custom parse function
+def parse_first_match(match_text: str) -> dict:
+    ## TODO: change prompt based on form year
+    prompt = "## Output format: {year:amount}## ## Instruction: use the following information, apple's earning per share for 2022, 2023 and 2024, not diluted ## \n ## Information : \n" + match_text + "##"
+
+    data = {
+        "message": prompt
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=data, timeout=30)
+        result = response.json()
+
+        # Check the API “status” field
+        if result.get("status") == "success":
+            print("AI Response:", result["response"])
+        else:
+            print("API Error:", result.get("error"))
+
+    except Exception as e:
+        print("Request failed:", str(e))
+    return {
+        "original_text": match_text,
+        "response": result["response"],
+        "length": len(prompt)
+    }
