@@ -3,12 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>PDF Regex Search</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
+            max-width: 900px;
             margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Flex layout for file vs CIK/Company */
+        .row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            align-items: flex-start; /* ADD THIS */
+        }
+
+        .column #drop-zone {
+            width: 100%;     /* ADD THIS */
+            box-sizing: border-box; /* ADD THIS */
+        }
+
+        .column {
+            flex: 1;
+            min-width: 200px;
         }
 
         #drop-zone {
@@ -16,7 +44,13 @@
             padding: 40px;
             text-align: center;
             cursor: pointer;
-            margin-bottom: 20px;
+            transition: background-color 0.2s;
+            
+            min-height: 200px;   /* adjust this value as needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
         }
 
         #drop-zone.dragover {
@@ -25,7 +59,23 @@
 
         label {
             display: block;
-            margin-top: 12px;
+            margin-top: 10px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
         }
 
         .radio-group {
@@ -34,17 +84,9 @@
             border: 1px solid #ccc;
         }
 
-        input[type="text"],
-        input[type="number"] {
-            width: 100%;
-            padding: 6px;
-        }
-
-        button {
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
+        /* Hidden by default */
+        .conditional {
+            display: none;
         }
     </style>
 </head>
@@ -52,62 +94,57 @@
 
 <h2>PDF Regex Search</h2>
 
-<form action="/search"
-      method="post"
-      enctype="multipart/form-data"
-      target="_blank">
+<form action="/search" method="post" enctype="multipart/form-data" target="_blank">
 
-    <!-- Drag & Drop Zone -->
-    <div id="drop-zone">
-        Drag & Drop PDF Here<br>
-        <small>(or click to select)</small>
+    <!-- Row: File vs CIK/Company -->
+    <div class="row">
+        <div class="column">
+            <!-- Drag & Drop Zone -->
+            <div id="drop-zone">
+                Drag & Drop PDF Here<br>
+                <small>(or click to select)</small>
+            </div>
+            <input type="file" id="file-input" name="file" accept="application/pdf" hidden>
+        </div>
+
+        <div class="column">
+            <label>
+                CIK (don't upload file):
+                <input type="text" name="cik">
+            </label>
+
+            <label>
+                Company (don't upload file nor precise CIK):
+                <input type="text" name="company" list="company-list">
+            </label>
+            <datalist id="company-list">
+            {% for company in companies %}
+                <option value="{{ company }}">
+            {% endfor %}
+            </datalist>
+
+            <label>
+                Year (shared for CIK or file):
+                <input type="number" name="year" min="1900" max="2100" step="1" placeholder="2025">
+            </label>
+        </div>
     </div>
 
-    <!-- Hidden File Input -->
-    <input type="file"
-           id="file-input"
-           name="file"
-           accept="application/pdf"
-           hidden>
-    <label>
-        CIK (don't upload file):
-        <input type="text" name="cik">
-    </label>
-    <label>
-        Company (don't upload file nor precise CIK):
-        <input type="text" name="company">
-    </label>
-    <label for="year">Year for CIK</label>
-    <input
-        type="number"
-        id="year"
-        name="year"
-        min="1900"
-        max="2100"
-        step="1"
-        placeholder="2025"
-    >
-
+    <!-- Regex / Text -->
     <label>
         Regex / Text:
-        <input type="text" name="pattern" value="(In millions, except number of shares, which are reflected in thousands, and per-share amounts)
-">
+        <input type="text" name="pattern" value="(?:Basic earnings|Basic net income|Earnings|Net income) per (?:common )?share">
     </label>
 
-    <label>
-        Prompt (optional):
-        <input type="text" name="base">
-    </label>
-
-
+    <!-- Characters Before/After -->
     <label>
         Characters Before:
-        <input type="number" name="before" value="20">
+        <input type="number" name="before" value="2000">
     </label>
 
     <label>
         Characters After:
-        <input type="number" name="after" value="1100">
+        <input type="number" name="after" value="800">
     </label>
 
     <!-- Result Type Selector -->
@@ -115,67 +152,90 @@
         <strong>Result to open:</strong>
 
         <label>
-            <input type="radio"
-                   name="output_type"
-                   value="text"
-                   checked>
+            <input type="radio" name="output_type" value="text" checked>
             First match text (context)
         </label>
 
         <label>
-            <input type="radio"
-                   name="output_type"
-                   value="png">
+            <input type="radio" name="output_type" value="png">
             Highlighted PNG (Only supports pdf)
         </label>
 
-
         <label>
-            <input type="radio"
-                   name="output_type"
-                   value="parse">
+            <input type="radio" name="output_type" value="parse">
             Parse file
         </label>
+    </div>
+
+    <!-- Conditional Prompt / Model -->
+    <div id="conditional-fields" class="conditional">
+        <label>
+            Prompt (optional):
+            <input type="text" name="base">
+        </label>
+
+        <label for="model">Model:</label>
+        <select name="model" id="model">
+            <option value="">-- Select a model --</option>
+            <option value="openai/gpt-oss-120b" selected>gpt-oss-120b</option>
+            <option value="openai/gpt-oss-20b">gpt-oss-20b</option>
+            <option value="meta-llama/llama-4-maverick-17b-128e-instruct">llama-4-maverick-17b-128e-instruct</option>
+            <option value="meta-llama/llama-4-scout-17b-16e-instruct">llama-4-scout-17b-16e-instruct</option>
+            <option value="groq/compound">groq/compound</option>
+            <option value="qwen/qwen3-32b">qwen3-32b</option>
+        </select>
     </div>
 
     <button type="submit">Search</button>
 </form>
 
 <script>
+    // File drag & drop
     const dropZone = document.getElementById("drop-zone");
     const fileInput = document.getElementById("file-input");
 
-    // Click opens file picker
     dropZone.addEventListener("click", () => fileInput.click());
 
-    // Drag over
     dropZone.addEventListener("dragover", (e) => {
         e.preventDefault();
         dropZone.classList.add("dragover");
     });
 
-    // Drag leave
-    dropZone.addEventListener("dragleave", () => {
-        dropZone.classList.remove("dragover");
-    });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
 
-    // Drop file
     dropZone.addEventListener("drop", (e) => {
         e.preventDefault();
         dropZone.classList.remove("dragover");
-
         if (e.dataTransfer.files.length > 0) {
             fileInput.files = e.dataTransfer.files;
             dropZone.innerHTML = e.dataTransfer.files[0].name;
         }
     });
 
-    // Show selected file name
     fileInput.addEventListener("change", () => {
         if (fileInput.files.length > 0) {
             dropZone.innerHTML = fileInput.files[0].name;
         }
     });
+
+    // Show prompt & model only if "Parse file" is selected
+    const outputRadios = document.querySelectorAll('input[name="output_type"]');
+    const conditionalFields = document.getElementById("conditional-fields");
+
+    outputRadios.forEach(radio => {
+        radio.addEventListener("change", () => {
+            if (document.querySelector('input[name="output_type"]:checked').value === "parse") {
+                conditionalFields.style.display = "block";
+            } else {
+                conditionalFields.style.display = "none";
+            }
+        });
+    });
+
+    // Initialize visibility on page load
+    if (document.querySelector('input[name="output_type"]:checked').value === "parse") {
+        conditionalFields.style.display = "block";
+    }
 </script>
 
 </body>

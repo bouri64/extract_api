@@ -1,0 +1,162 @@
+[
+  {
+    "path": ".\\train\\amazon\\02da2a86-7bb9-4bcb-95ae-4ce27ea5e3bc.pdf",
+    "output": "[2017,6.15]"
+  },
+  {
+    "path": ".\\train\\amazon\\2e22532e-2b0f-458b-bd39-7daf01da779a.pdf",
+    "output": "[2014,-0.52]"
+  },
+  {
+    "path": ".\\train\\amazon\\336d8745-ea82-40a5-9acc-1a89df23d0f3.pdf",
+    "output": "[2020,41.83]"
+  },
+  {
+    "path": ".\\train\\amazon\\4d39f579-19d8-4119-b087-ee618abf82d6.pdf",
+    "output": "[2019,23.46]"
+  },
+  {
+    "path": ".\\train\\amazon\\69682db4-0019-42ce-a4e1-983c30725f1b.pdf",
+    "output": "[2016,5.01]"
+  },
+  {
+    "path": ".\\train\\amazon\\8c560d9c-f48e-4b8d-aad8-6a0badb8e348.pdf",
+    "output": "[2015,1.28]"
+  },
+  {
+    "path": ".\\train\\amazon\\bed19367-fa6b-41ff-a973-df19510b0bba.pdf",
+    "output": "[2018,20.14]"
+  },
+  {
+    "path": ".\\train\\amazon\\c7c14359-36fa-40c3-b3ca-5bf7f3fa0b96.pdf",
+    "output": "[2023,2.95]"
+  },
+  {
+    "path": ".\\train\\amazon\\d2fde7ee-05f7-419d-9ce8-186de4c96e25.pdf",
+    "output": "[2022,-0.27]"
+  },
+  {
+    "path": ".\\train\\amazon\\e42c2068-bad5-4ab6-ae57-36ff8b2aeffd.pdf",
+    "output": "[2024,5.66]"
+  },
+  {
+    "path": ".\\train\\amazon\\f965e5c3-fded-45d3-bbdb-f750f156dcc9.pdf",
+    "output": "[2021,65.96]"
+  },
+  {
+    "path": ".\\train\\amex\\0dc0103f-bd50-40bc-83fd-8a741f073c15.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\1cfaf40b-7afd-4df2-875f-965f0cef75ea.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\3ff46ff5-0d7a-4964-a1c3-bc719191dddf.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\5bd2551c-17b3-4f79-b4a4-d52891751215.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\65345cb2-3baf-42fd-ad88-968e29a7264a.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\7046b08f-d2b5-40d7-bf43-9b09485c6050.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\aed0da34-9d16-42fc-a645-47519ce22623.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\d13acb37-2f7e-411d-8ed1-6516668bf861.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\d4b6a1d2-9efc-43e3-92df-449829c58d1d.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\de22af7d-7109-4af4-91f8-cf512e2398c3.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\amex\\fdcb94cb-6bf6-4ae3-a26a-f4a3b17f8ed1.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\1a919118-a594-44f3-92f0-4ecca47b1a7d.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\42ede86f-6518-450f-bc88-60211bf39c6d.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\68027c6d-356d-46a4-a524-65d8ec05a1da.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\7b5717ca-6222-48e6-801c-9ea28feeef86.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\b4266e40-1de6-4a34-9dfb-8632b8bd57e0.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\c24e7a28-5254-4dfa-9447-62aaa3c24bb1.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\c87043b9-5d89-4717-9f49-c4f9663d0061.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\ca6735cd-5ab7-4bb9-abf8-564739c3506b.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\faab4555-c69b-438a-aaf7-e09305f87ca3.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\fae19475-b538-441b-ab15-0a311f161ebb.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\apple\\ffb58afc-aa5d-4b55-8d12-8e0937575a35.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\tesla\\tsla-10k_20151231-gen_0.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\tesla\\tsla-10k_20171231-gen_0.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\tesla\\tsla-10k_20181231-gen_0.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\tesla\\tsla-10k_20201231-gen.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\tesla\\tsla-20221231-gen.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\tesla\\tsla-20231231-gen.pdf",
+    "output": ""
+  },
+  {
+    "path": ".\\train\\tesla\\tsla-20241231-gen.pdf",
+    "output": ""
+  }
+]

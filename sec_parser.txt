@@ -1,0 +1,46 @@
+(?:Earnings|Net income) per (?:common )?share 	(also 1800 and 800)
+_________________________________
+.venv\Scripts\activate  
+uvicorn main:app --reload
+_________________________________
+* Step 1: regexes => done
+* Step 2: feed it to api, and extract structured info about earnings per share
+* Step 3: multiple files (multiple pdfs, call sec, understand json or text) …
+**** Make prompt depending on year => done
+**** Enable text => done
+**** Call Sec => done (2020 tp 2025)
+**** Dict for all sec cik (company code, and name levenstein, and cik) => done (levenstein bad)
+_________________________
+Extract information
+_________________________
+* Step 4: Optimize
+**** check multiple apple, and multiple companies => 4 companies works
+**** Make script: prompt last year, earnings per share only (+ year), create csv (tesla loss + amazon ignore case + changed ai) => done
+_________________________
+**** Verify number two ways (3 last years * 2) then change ai in app => much better for apple and amazon (also amex needed more context)
+== amex 2024/2022/2023 no basic both wrong
+**** Calculate response time => fast no need
+**** Maybe remove noise (clean option, based on lines)
+* Step 5: find all needed information + check coherence (last 3 year from multiple sources)
+**** Make training set (to choose best model and prompt) + unit test
+Take more context + check multiple times or multiple sources?
+Stronger regex maybe???
+(?i:consolidated)[\s\S]{0,3000}?(?:Basic earnings|Basic net income|Earnings|Net income)\s+per\s+(?:common\s+)?share
+(get back to amex 4 years to fix)
+**** Toggle list of info needed
+**** Need number of shares (amazon *20 in 2021/2022)
+* Step 6: compare api to regexes
+* Step 7: multiple pages
+* Step 8: clean, make req file, deploy, add unit tests?
+* Step 9: expose as api? or use locally?
+**** Database, old and new sp500
+**** Fiscal year doesn't end at the same time for everyone
+
+_________________________
+Collect information
+_________________________
+* Must be deployed
+* Must be defined
+* Yfinance
+* Jobs
+* Must find disappearing companies
