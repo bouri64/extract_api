@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from Levenshtein import distance
+import pandas as pd
 # import fitz  # PyMuPDF => make it lazy
 import re
 import tempfile
