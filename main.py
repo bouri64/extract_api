@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from Levenshtein import distance
-import fitz  # PyMuPDF
+# import fitz  # PyMuPDF
 import re
 import tempfile
 import os
@@ -107,67 +107,67 @@ async def search_pdf(
         }
     
 
-    doc = fitz.open(file_path)
+    # doc = fitz.open(file_path)
 
-    total_hits = 0
-    first_match_data = None
+    # total_hits = 0
+    # first_match_data = None
 
-    file_name = os.path.splitext(file.filename)[0]
+    # file_name = os.path.splitext(file.filename)[0]
 
-    for page_number, page in enumerate(doc):
-        text = page.get_text()
-        matches = list(regex.finditer(text))
-        total_hits += len(matches)
+    # for page_number, page in enumerate(doc):
+    #     text = page.get_text()
+    #     matches = list(regex.finditer(text))
+    #     total_hits += len(matches)
 
-        if matches and first_match_data is None:
-            match = matches[0]
-            start, end = match.span()
-            print("len text:",len(text))
-            print("end + after:",end+after)
-            context = text[max(0, start - before): min(len(text)-1, end + after)]
+    #     if matches and first_match_data is None:
+    #         match = matches[0]
+    #         start, end = match.span()
+    #         print("len text:",len(text))
+    #         print("end + after:",end+after)
+    #         context = text[max(0, start - before): min(len(text)-1, end + after)]
 
-            # Find rectangles for highlight
-            text_instances = page.search_for(match.group())
-            context_instances = page.search_for(context)
-            print("context:",context_instances)
-            if context_instances:
-                merged_rect = merge_rects(context_instances)
-                print("merged_rect:",merged_rect)
-                page.draw_rect(merged_rect, color=(1, 0, 0), width=2)
+    #         # Find rectangles for highlight
+    #         text_instances = page.search_for(match.group())
+    #         context_instances = page.search_for(context)
+    #         print("context:",context_instances)
+    #         if context_instances:
+    #             merged_rect = merge_rects(context_instances)
+    #             print("merged_rect:",merged_rect)
+    #             page.draw_rect(merged_rect, color=(1, 0, 0), width=2)
 
-            if text_instances:
-                rect = text_instances[0]
-                page.draw_rect(rect, color=(1, 0, 0), width=2)
+    #         if text_instances:
+    #             rect = text_instances[0]
+    #             page.draw_rect(rect, color=(1, 0, 0), width=2)
 
-                # Save highlighted page as image
-                pix = page.get_pixmap(dpi=150)
-                image_path = f"static/{file_name}.png"
-                pix.save(image_path)
+    #             # Save highlighted page as image
+    #             pix = page.get_pixmap(dpi=150)
+    #             image_path = f"static/{file_name}.png"
+    #             pix.save(image_path)
 
-            first_match_data = {
-                "page": page_number + 1,
-                "text": context,
-            }
+    #         first_match_data = {
+    #             "page": page_number + 1,
+    #             "text": context,
+    #         }
 
-    doc.close()
-    os.remove(file_path)
+    # doc.close()
+    # os.remove(file_path)
 
-    if not first_match_data:
-        return JSONResponse({"message": "No matches found"})
+    # if not first_match_data:
+    #     return JSONResponse({"message": "No matches found"})
 
-    if output_type == "png":
-        return RedirectResponse(
-        url=f"/static/{file_name}.png",
-        status_code=302
-    )
-    elif output_type == "text":
-        return {
-            "first_match": first_match_data,
-            "total_hits": total_hits
-        }
+    # if output_type == "png":
+    #     return RedirectResponse(
+    #     url=f"/static/{file_name}.png",
+    #     status_code=302
+    # )
+    # elif output_type == "text":
+    #     return {
+    #         "first_match": first_match_data,
+    #         "total_hits": total_hits
+    #     }
     
-    # return parse_first_match(first_match_data["text"], base)
-    return parse_groq(first_match_data["text"], base, model)
+    # # return parse_first_match(first_match_data["text"], base)
+    # return parse_groq(first_match_data["text"], base, model)
 
 
 def merge_rects(rects):
